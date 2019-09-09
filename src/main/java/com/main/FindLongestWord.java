@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
- * Assumptions: Case Insensitive, remove punctuation from beginning and end of a word but not from middle
+ * Assumptions: Case Insensitive, remove punctuation from beginning and end of a word but not from middle, ignore whitespace
  */
 
 public class FindLongestWord {
@@ -69,18 +69,3 @@ public class FindLongestWord {
 	}
 
 }
-
-
-/*
-
-1. In the programming language of your choice create a class with a method to
-return the length and longest words in a sentence. For example, “The cow
-jumped over the moon.” should return 6 and “jumped”.
-2. Create unit tests to test that method, reworking your code if needed.
-3. Explain any assumptions in comments.
-4. Write efficient, production-level code and write test cases that cover as many
-edge cases as possible.
-5. Add a README explaining how to execute your tests.
-6. Share via GitHub etc.
-
-*/

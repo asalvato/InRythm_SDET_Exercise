@@ -3,14 +3,25 @@ package com.main;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /*
  * Assumptions: Case Insensitive, remove punctuation from beginning and end of a word but not from middle, ignore whitespace
  */
 
 public class FindLongestWord {
+
+	private static final String PUNCTUATION_REGEX = "(^(\\p{Punct}+)|(\\p{Punct}+)$)";
+	private static final String WHITESPACE_REGEX = "^((?=[\\W_]).)*$";
+	private static final String EMPTY_SENTENCE_ERROR = "Please enter a non-empty sentence.";
+	private static final String NO_CHARACTER_ERROR = "Please enter a sentence with at least one word";
+	
+	static Logger log = LogManager.getLogger(FindLongestWord.class);
 
 	public static void main(String[] args) {
 		
@@ -20,52 +31,49 @@ public class FindLongestWord {
 	
 	static String getLongest(String sentence) {
 		
-		// Create patterns to assist removing punctuation at the beginning or end of a word
-		Pattern endPattern = Pattern.compile("(^(\\p{Punct}+)|(\\p{Punct}+)$)");
-		Pattern noCharacterPattern = Pattern.compile("^((?=[\\W_]).)*$");
-		Matcher matcher;
-		
 		//If sentence is null, empty, or only white-space return error statement
-		if (sentence == null || sentence.isBlank()) 
-			return "Please enter a non-empty sentence.";
-
-		String[] words = sentence.split(" ");
-		
-		//If Sentence is one word long and does not contain any alpha characters return error statement
-		if (words.length == 1) {
-			matcher = noCharacterPattern.matcher(words[0]);
-			if (matcher.find())
-				return "Please enter a sentence with at least one word";
+		if (sentence == null || sentence.isBlank()) {
+			log.debug("Sentence: Null or Empty - Error Msg: {}", EMPTY_SENTENCE_ERROR);
+			return EMPTY_SENTENCE_ERROR;
 		}
-
-		Integer wordLength;
-		HashMap<Integer, ArrayList<String>> wordMap = new HashMap<>();
-		for (int i = 0; i < words.length; i++) {
-			if (!words[i].isBlank()) {
-				String word = words[i].toLowerCase();
-				matcher = endPattern.matcher(word);
-				if (matcher.find()) {
-					//System.out.println(matcher.group(1) + " : " + matcher.start(1) + " : " + matcher.end(1));
-					word = matcher.replaceAll("");
-				}
-				
-				//If the array list is empty, create a new one else add to the existing array list
-				wordLength = Integer.valueOf(word.length());
-				if (wordMap.get(word.length()) == null) {
-					ArrayList<String> tmp = new ArrayList<String>();
-					tmp.add(word);
-					wordMap.put(wordLength, tmp);
-				} else {
-					ArrayList<String> tmp = wordMap.get(wordLength);
-					if (!tmp.contains(word))
-						tmp.add(word);
-					wordMap.put(wordLength, tmp);
-				}
+		
+		// Create patterns to assist removing punctuation at the beginning or end of a word
+		Pattern punctuationPattern = Pattern.compile(PUNCTUATION_REGEX);
+		Pattern noCharacterPattern = Pattern.compile(WHITESPACE_REGEX);
+		Matcher matcher = noCharacterPattern.matcher(sentence);
+		
+		//If Sentence does not contain any alphanumeric characters return error statement
+		if (matcher.find()) {
+			log.debug("Sentence: {} - Error Msg: {}", sentence, NO_CHARACTER_ERROR);
+			return NO_CHARACTER_ERROR;
+		}
+			
+		HashMap<Integer, List<String>> wordMap = new HashMap<>();
+		
+		for (String word : sentence.split("\\s+")) {
+			matcher = punctuationPattern.matcher(word);
+			if (matcher.find()) {
+				log.trace("Word before punctuation removal: {}", word);
+				word = matcher.replaceAll("");
+				log.trace("Word after  punctuation removal: {}", word);
 			}
+			
+			wordMap.put(word.length(), addWordToList(wordMap.get(word.length()), word.toLowerCase()));
 		}
 		int maxLength = Collections.max(wordMap.keySet());
 		
 		return "Length: " + maxLength + " - Words: " + wordMap.get(maxLength);
 	}
 
+	private static List<String> addWordToList(List<String> wordList, String wordToAdd) {
+
+		if(wordList == null)
+			wordList = new ArrayList<>();
+		
+		if(!wordList.contains(wordToAdd))
+			wordList.add(wordToAdd);
+		
+		return wordList;
+	}
+	
 }

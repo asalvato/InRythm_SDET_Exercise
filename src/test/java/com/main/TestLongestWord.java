@@ -33,6 +33,26 @@ public class TestLongestWord {
 	}
 	
 	@Test
+	public void lineBreakTest() {
+		assertEquals(getLongest("\r\n"), "Please enter a non-empty sentence.");
+	}
+	
+	@Test
+	public void lineBreakWithWordsTest() {
+		assertEquals(getLongest("This is \r\n a test"), "Length: 4 - Words: [this, test]");
+	}
+	
+	@Test
+	public void lineBreakWithWordsAndTabTest() {
+		assertEquals(getLongest("This 	 is \r\n	a test"), "Length: 4 - Words: [this, test]");
+	}
+	
+	@Test
+	public void multipleLineBreakTypesTest() {
+		assertEquals(getLongest("This\ris\na\r\ntest"), "Length: 4 - Words: [this, test]");
+	}
+	
+	@Test
 	public void caseInsensitiveTest() {
 		assertEquals(getLongest("Jumped JUMPED jumped"), "Length: 6 - Words: [jumped]");
 	}

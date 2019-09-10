@@ -21,7 +21,7 @@ public class FindLongestWord {
 	private static final String EMPTY_SENTENCE_ERROR = "Please enter a non-empty sentence.";
 	private static final String NO_CHARACTER_ERROR = "Please enter a sentence with at least one word";
 	
-	static Logger log = LogManager.getLogger(FindLongestWord.class);
+	private static Logger log = LogManager.getLogger(FindLongestWord.class);
 
 	public static void main(String[] args) {
 		
